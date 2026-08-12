@@ -366,5 +366,4 @@ FodyWeavers.xsd
 **/Migrations/
 
 # ASP.NET Core appsettings
-appsettings.json
 /BasiQPLL/appsettings.json
