@@ -1,8 +1,8 @@
-﻿using BasicBLL.DTOs;
-using BasicBLL.DTOs.PaginationDTOs;
-using BasicBLL.DTOs.UserDTOs;
-using BasicBLL.Mapper;
-using BasicBLL.Services.Abstraction;
+﻿using BasiQBLL.DTOs;
+using BasiQBLL.DTOs.PaginationDTOs;
+using BasiQBLL.DTOs.UserDTOs;
+using BasiQBLL.Mapper;
+using BasiQBLL.Services.Abstraction;
 using BasiQDAL.Entities;
 using BasiQDAL.Repositories.Abstraction;
 using Microsoft.AspNetCore.Identity;
@@ -13,7 +13,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace BasicBLL.Services.Implementation
+namespace BasiQBLL.Services.Implementation
 {
     public class UserService : IUserService
     {

@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using BasiQDAL.Repositories.Implementation;
 using BasiQDAL.Repositories.Abstraction;
-using BasicBLL.Services.Abstraction;
-using BasicBLL.Services.Implementation;
+using BasiQBLL.Services.Abstraction;
+using BasiQBLL.Services.Implementation;
 
-namespace BasicBLL.Helpers
+namespace BasiQBLL.Helpers
 {
     public static class ServiceExtensions
     {

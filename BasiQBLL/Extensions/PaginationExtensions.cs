@@ -1,6 +1,6 @@
-﻿using BasicBLL.DTOs.PaginationDTOs;
+﻿using BasiQBLL.DTOs.PaginationDTOs;
 
-namespace BasicBLL.Extensions
+namespace BasiQBLL.Extensions
 {
     public static class PaginationExtensions
     {

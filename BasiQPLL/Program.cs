@@ -1,4 +1,8 @@
 
+using BasiQBLL.Helpers;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
+
 namespace BasiQPLL
 {
     public class Program
@@ -6,10 +10,51 @@ namespace BasiQPLL
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Configuration.AddEnvironmentVariables();
+            builder.Services.BasiQEnhancedConnectionString(builder.Configuration);
+            builder.Services.BasiQDependencyInjection();
+            builder.Services.BasiQIdentity(builder.Configuration);
 
             // Add services to the container.
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                // This prevents unknown properties from crashing deserialization
+            }); ;
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "BasiQ API",
+                    Version = "v1"
+                });
 
-            builder.Services.AddControllers();
+                // Load XML from TheBasiQPL (controllers)
+                var plXmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var plXmlPath = Path.Combine(AppContext.BaseDirectory, plXmlFile);
+                if (File.Exists(plXmlPath))
+                {
+                    c.IncludeXmlComments(plXmlPath);
+                }
+
+                // Load XML from TheBasiQBLL (DTOs)
+                var bllXmlFile = "TheBasiQBLL.xml";
+                var bllXmlPath = Path.Combine(AppContext.BaseDirectory, bllXmlFile);
+                if (File.Exists(bllXmlPath))
+                {
+                    c.IncludeXmlComments(bllXmlPath);
+                }
+            });
+
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new Exception("DefaultConnection connection string is missing");
+            }
+
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
@@ -21,10 +66,21 @@ namespace BasiQPLL
                 app.MapOpenApi();
             }
 
-            app.UseHttpsRedirection();
+            app.MapHealthChecks("/health");// check if the db connected or not
 
+            // Configure the HTTP request pipeline.
+            app.UseSwagger();
+            app.UseSwaggerUI();
+            app.UseDeveloperExceptionPage();
+
+            app.UseHttpsRedirection();
+            app.UseRouting();
+            app.UseCors("AllowAngular");
+            app.UseAuthentication();
             app.UseAuthorization();
 
+            // map to swagger view as start view
+            app.MapGet("/", () => Results.Redirect("/swagger"));
 
             app.MapControllers();
 

@@ -1,4 +1,4 @@
-﻿namespace BasicBLL.DTOs.PaginationDTOs
+﻿namespace BasiQBLL.DTOs.PaginationDTOs
 {
     public class PagedResultDTO<T>
     {

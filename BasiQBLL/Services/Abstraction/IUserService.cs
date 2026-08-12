@@ -1,9 +1,9 @@
-﻿using BasicBLL.DTOs;
-using BasicBLL.DTOs.PaginationDTOs;
+﻿using BasiQBLL.DTOs;
+using BasiQBLL.DTOs.PaginationDTOs;
 using BasicBLL.DTOs.UserDTOs;
 using Microsoft.AspNetCore.Identity;
 
-namespace BasicBLL.Services.Abstraction
+namespace BasiQBLL.Services.Abstraction
 {
     public interface IUserService
     {

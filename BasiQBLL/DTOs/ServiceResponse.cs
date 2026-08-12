@@ -1,4 +1,4 @@
-﻿namespace BasicBLL.DTOs
+﻿namespace BasiQBLL.DTOs
 {
     public class ServiceResponse<T>
     {

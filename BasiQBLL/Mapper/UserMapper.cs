@@ -1,8 +1,8 @@
-﻿using BasicBLL.DTOs.UserDTOs;
+﻿using BasiQBLL.DTOs.UserDTOs;
 using BasiQDAL.Entities;
 using Riok.Mapperly.Abstractions;
 
-namespace BasicBLL.Mapper
+namespace BasiQBLL.Mapper
 {
     [Mapper]
     public partial class UserMapper
