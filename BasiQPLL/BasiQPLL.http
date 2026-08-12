@@ -1,0 +1,6 @@
+@BasiQPLL_HostAddress = http://localhost:5210
+
+GET {{BasiQPLL_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
