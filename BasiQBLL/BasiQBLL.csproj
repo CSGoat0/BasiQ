@@ -12,7 +12,6 @@
     <Folder Include="Extensions\" />
     <Folder Include="Helpers\" />
     <Folder Include="Mapper\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>

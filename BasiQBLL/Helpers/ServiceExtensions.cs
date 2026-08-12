@@ -60,6 +60,7 @@ namespace BasiQBLL.Helpers
 
             // Services
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IEmailService, EmailService>();
         }
     }
 }
