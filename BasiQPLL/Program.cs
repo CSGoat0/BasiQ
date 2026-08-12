@@ -14,6 +14,7 @@ namespace BasiQPLL
             builder.Services.BasiQEnhancedConnectionString(builder.Configuration);
             builder.Services.BasiQDependencyInjection();
             builder.Services.BasiQIdentity(builder.Configuration);
+            builder.Services.BasiQConfiguration(builder.Configuration);
 
             // Add services to the container.
             builder.Services.AddControllers().AddJsonOptions(options =>

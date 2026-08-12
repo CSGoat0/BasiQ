@@ -31,7 +31,7 @@ namespace BasiQBLL.Helpers
             .AddDefaultTokenProviders();
         }
 
-        public static void TheCharityConfiguration(this IServiceCollection services, IConfiguration configuration)
+        public static void BasiQConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
         }
