@@ -9,6 +9,7 @@ using BasiQDAL.Repositories.Implementation;
 using BasiQDAL.Repositories.Abstraction;
 using BasiQBLL.Services.Abstraction;
 using BasiQBLL.Services.Implementation;
+using BasiQBLL.Settings;
 
 namespace BasiQBLL.Helpers
 {
@@ -28,6 +29,11 @@ namespace BasiQBLL.Helpers
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<BasiQDbContext>()
             .AddDefaultTokenProviders();
+        }
+
+        public static void TheCharityConfiguration(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
         }
 
         public static void BasiQEnhancedConnectionString(this IServiceCollection services, IConfiguration configuration, string stringName = "defaultConnection")
