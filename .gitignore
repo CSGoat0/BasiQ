@@ -367,3 +367,4 @@ FodyWeavers.xsd
 
 # ASP.NET Core appsettings
 appsettings.json
+/BasiQPLL/appsettings.json
