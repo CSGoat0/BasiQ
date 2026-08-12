@@ -1,4 +1,4 @@
-﻿namespace BasicBLL.DTOs.UserDTOs
+﻿namespace BasiQBLL.DTOs.UserDTOs
 {
     public class UpdateUserDTO
     {

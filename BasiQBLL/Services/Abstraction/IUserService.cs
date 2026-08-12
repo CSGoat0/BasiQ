@@ -1,6 +1,6 @@
 ﻿using BasiQBLL.DTOs;
 using BasiQBLL.DTOs.PaginationDTOs;
-using BasicBLL.DTOs.UserDTOs;
+using BasiQBLL.DTOs.UserDTOs;
 using Microsoft.AspNetCore.Identity;
 
 namespace BasiQBLL.Services.Abstraction
