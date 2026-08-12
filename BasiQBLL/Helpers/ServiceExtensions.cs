@@ -10,12 +10,15 @@ using BasiQDAL.Repositories.Abstraction;
 using BasiQBLL.Services.Abstraction;
 using BasiQBLL.Services.Implementation;
 using BasiQBLL.Settings;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace BasiQBLL.Helpers
 {
     public static class ServiceExtensions
     {
-        public static void BasiQIdentity(this IServiceCollection services, IConfiguration Configuration)
+        public static void AddBasiQIdentity(this IServiceCollection services, IConfiguration Configuration)
         {
             services.AddDataProtection();
             services.AddIdentityCore<User>(options =>
@@ -31,12 +34,12 @@ namespace BasiQBLL.Helpers
             .AddDefaultTokenProviders();
         }
 
-        public static void BasiQConfiguration(this IServiceCollection services, IConfiguration configuration)
+        public static void AddBasiQConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
         }
 
-        public static void BasiQEnhancedConnectionString(this IServiceCollection services, IConfiguration configuration, string stringName = "defaultConnection")
+        public static void AddBasiQEnhancedConnectionString(this IServiceCollection services, IConfiguration configuration, string stringName = "defaultConnection")
         {
             var connectionString = configuration.GetConnectionString(stringName);
             services.AddDbContext<BasiQDbContext>(options =>
@@ -53,7 +56,7 @@ namespace BasiQBLL.Helpers
         );
         }
 
-        public static void BasiQDependencyInjection(this IServiceCollection services)
+        public static void AddBasiQDependencyInjection(this IServiceCollection services)
         {
             // Repositories
             services.AddScoped<IUserRepository, UserRepository>();
@@ -61,6 +64,30 @@ namespace BasiQBLL.Helpers
             // Services
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmailService, EmailService>();
+        }
+
+        public static void AddThirdPartyAuthentication(this IServiceCollection services, IConfiguration Configuration)
+        {
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = Configuration["Jwt:Issuer"],
+                ValidAudience = Configuration["Jwt:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                    Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key not configured")))
+            };
+        })
+        .AddCookie("ExternalCookie"); // dedicated scheme for OAuth handshake only
         }
     }
 }

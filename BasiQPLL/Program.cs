@@ -11,10 +11,11 @@ namespace BasiQPLL
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Configuration.AddEnvironmentVariables();
-            builder.Services.BasiQEnhancedConnectionString(builder.Configuration);
-            builder.Services.BasiQDependencyInjection();
-            builder.Services.BasiQIdentity(builder.Configuration);
-            builder.Services.BasiQConfiguration(builder.Configuration);
+            builder.Services.AddBasiQEnhancedConnectionString(builder.Configuration);
+            builder.Services.AddBasiQDependencyInjection();
+            builder.Services.AddBasiQIdentity(builder.Configuration);
+            builder.Services.AddBasiQConfiguration(builder.Configuration);
+            builder.Services.AddThirdPartyAuthentication(builder.Configuration);
 
             // Add services to the container.
             builder.Services.AddControllers().AddJsonOptions(options =>
