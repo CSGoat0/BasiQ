@@ -43,7 +43,7 @@ namespace BasiQBLL.Helpers
             connectionString: connectionString,
             name: "BasiQ-DB",
             failureStatus: HealthStatus.Unhealthy,
-            tags: new[] { "db", "sql", "charity" }
+            tags: new[] { "db", "sql", "BasiQ" }
         );
         }
 
