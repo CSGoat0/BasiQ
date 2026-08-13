@@ -16,6 +16,7 @@ namespace BasiQDAL.Repositories.Abstraction
         // ===== Lookup =====
         Task<User?> GetUserByIdAsync(string id);
         Task<User?> GetUserByEmailAsync(string email);
+        Task<User?> GetUserByUsernameAsync(string username);
         Task<User?> FindByNameOrEmailAsync(string usernameOrEmail);
         Task<(IEnumerable<User> Data, int TotalCount)> GetAllUsersAsync(int pageNumber, int pageSize, bool includeDeleted = false);
         Task<bool> UserExistsAsync(string userId);

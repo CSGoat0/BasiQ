@@ -320,6 +320,30 @@ namespace BasiQBLL.Services.Implementation
             {
                 _logger.LogInformation("Creating new user with email: {Email}", createUserDTO.Email);
 
+                // ✅ Check if email is already registered
+                var existingUser = await _userRepository.GetUserByEmailAsync(createUserDTO.Email);
+                if (existingUser != null)
+                {
+                    _logger.LogWarning("Registration attempt with existing email: {Email}", createUserDTO.Email);
+                    return new ServiceResponse<IdentityResult>
+                    {
+                        Success = false,
+                        Message = "This email address is already registered. Please use a different email or try logging in."
+                    };
+                }
+
+                // Optional: Check if username is already taken
+                var existingUsername = await _userRepository.GetUserByUsernameAsync(createUserDTO.UserName);
+                if (existingUsername != null)
+                {
+                    _logger.LogWarning("Registration attempt with existing username: {Username}", createUserDTO.UserName);
+                    return new ServiceResponse<IdentityResult>
+                    {
+                        Success = false,
+                        Message = "This username is already taken. Please choose a different username."
+                    };
+                }
+
                 var user = _userMapper.MapToUser(createUserDTO);
                 var result = await _userRepository.CreateUserAsync(user, createUserDTO.Password);
 

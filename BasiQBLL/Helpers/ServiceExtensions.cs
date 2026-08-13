@@ -1,7 +1,6 @@
 ﻿using BasiQBLL.Services.Abstraction;
 using BasiQBLL.Services.Implementation;
 using BasiQBLL.Settings;
-using BasiQBLL.Validation.Filters;
 using BasiQDAL.Database;
 using BasiQDAL.Entities;
 using BasiQDAL.Repositories.Abstraction;
@@ -65,9 +64,6 @@ namespace BasiQBLL.Helpers
             // Services
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmailService, EmailService>();
-
-            // Validation Filters
-            services.AddScoped<EmailUniquenessFilter>();
         }
 
         public static void AddThirdPartyAuthentication(this IServiceCollection services, IConfiguration Configuration)
