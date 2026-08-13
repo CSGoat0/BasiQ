@@ -2,6 +2,7 @@
 using BasiQBLL.DTOs.PaginationDTOs;
 using BasiQBLL.DTOs.UserDTOs;
 using BasiQBLL.Services.Abstraction;
+using BasiQBLL.Validation.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -97,6 +98,7 @@ namespace BasiQPLL.Controllers
         /// </summary>
         [HttpPost("register")]
         [AllowAnonymous]
+        [EmailUniqueness]
         public async Task<IActionResult> Register([FromBody] CreateUserDTO responseDTO)
         {
             if (!ModelState.IsValid)

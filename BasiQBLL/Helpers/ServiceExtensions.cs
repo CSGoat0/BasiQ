@@ -1,16 +1,17 @@
-﻿using BasiQDAL.Database;
-using BasiQDAL.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using BasiQDAL.Repositories.Implementation;
-using BasiQDAL.Repositories.Abstraction;
-using BasiQBLL.Services.Abstraction;
+﻿using BasiQBLL.Services.Abstraction;
 using BasiQBLL.Services.Implementation;
 using BasiQBLL.Settings;
+using BasiQBLL.Validation.Filters;
+using BasiQDAL.Database;
+using BasiQDAL.Entities;
+using BasiQDAL.Repositories.Abstraction;
+using BasiQDAL.Repositories.Implementation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -64,6 +65,9 @@ namespace BasiQBLL.Helpers
             // Services
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmailService, EmailService>();
+
+            // Validation Filters
+            services.AddScoped<EmailUniquenessFilter>();
         }
 
         public static void AddThirdPartyAuthentication(this IServiceCollection services, IConfiguration Configuration)
