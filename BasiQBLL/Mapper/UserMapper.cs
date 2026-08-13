@@ -153,14 +153,8 @@ namespace BasiQBLL.Mapper
             if (!string.IsNullOrWhiteSpace(dto.Address))
                 existingUser.EditAddress(dto.Address);
 
-            if (!string.IsNullOrWhiteSpace(dto.Email))
-                existingUser.Email = dto.Email;
-
             if (!string.IsNullOrWhiteSpace(dto.PhoneNumber))
                 existingUser.PhoneNumber = dto.PhoneNumber;
-
-            if (!string.IsNullOrWhiteSpace(dto.FullName))
-                existingUser.EditFullName(dto.FullName);
 
             if (!string.IsNullOrWhiteSpace(dto.ImgPath))
                 existingUser.EditImage(dto.ImgPath);
