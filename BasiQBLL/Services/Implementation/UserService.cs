@@ -320,7 +320,7 @@ namespace BasiQBLL.Services.Implementation
             {
                 _logger.LogInformation("Creating new user with email: {Email}", createUserDTO.Email);
 
-                // ✅ Check if email is already registered
+                // Check if email is already registered
                 var existingUser = await _userRepository.GetUserByEmailAsync(createUserDTO.Email);
                 if (existingUser != null)
                 {
@@ -332,7 +332,7 @@ namespace BasiQBLL.Services.Implementation
                     };
                 }
 
-                // Optional: Check if username is already taken
+                // Check if username is already taken
                 var existingUsername = await _userRepository.GetUserByUsernameAsync(createUserDTO.UserName);
                 if (existingUsername != null)
                 {
