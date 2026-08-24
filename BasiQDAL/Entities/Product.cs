@@ -87,6 +87,16 @@ namespace BasiQDAL.Entities
             }
         }
 
+        internal void EditGlobalProductId(int globalProductId)
+        {
+            GlobalProductId = globalProductId;
+        }
+
+        internal void UnlinkFromGlobalProduct()
+        {
+            GlobalProductId = null;
+        }
+
         // ===== Status Methods =====
         public void UpdateStatus(ProductStatus status)
         {

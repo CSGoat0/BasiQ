@@ -7,7 +7,7 @@
         public string? Description { get; private set; }
         public string? PrimaryImageUrl { get; private set; }
 
-        // Navigation Properties - EF Core manages these
+        // Navigation Properties
         public virtual ICollection<Product>? Products { get; private set; }
 
         protected GlobalProduct() { }
