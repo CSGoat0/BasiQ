@@ -7,7 +7,7 @@
         public string? Description { get; private set; }
         public string? PrimaryImageUrl { get; private set; }
 
-        // Navigation Properties
+        // Navigation Properties - EF Core manages these
         public virtual ICollection<Product>? Products { get; private set; }
 
         protected GlobalProduct() { }
@@ -46,36 +46,6 @@
                 PrimaryImageUrl = primaryImageUrl;
                 UpdateTimestamp();
             }
-        }
-
-        // ===== Product Management =====
-        public void AddProduct(Product product)
-        {
-            if (Products == null)
-                Products = new List<Product>();
-
-            if (!Products.Any(p => p.Id == product.Id && !p.IsDeleted))
-            {
-                Products.Add(product);
-                product.LinkToGlobalProduct(this);
-                UpdateTimestamp();
-            }
-        }
-
-        public void RemoveProduct(int productId)
-        {
-            var product = Products?.FirstOrDefault(p => p.Id == productId && !p.IsDeleted);
-            if (product != null)
-            {
-                Products.Remove(product);
-                product.UnlinkFromGlobalProduct();
-                UpdateTimestamp();
-            }
-        }
-
-        public int GetLinkedProductsCount()
-        {
-            return Products?.Count(p => !p.IsDeleted) ?? 0;
         }
     }
 }
