@@ -26,5 +26,15 @@ namespace BasiQBLL.DTOs.ProductDTOs
         public List<string>? ImageUrls { get; set; } = new List<string>();
 
         public List<int>? CategoryIds { get; set; } = new List<int>();
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (SalePrice.HasValue && BasePrice.HasValue && SalePrice.Value > BasePrice.Value)
+            {
+                yield return new ValidationResult(
+                    "Sale price cannot be greater than base price.",
+                    new[] { nameof(SalePrice) }
+                );
+            }
+        }
     }
 }

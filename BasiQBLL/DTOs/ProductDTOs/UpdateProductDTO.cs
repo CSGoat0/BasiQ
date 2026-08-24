@@ -23,5 +23,16 @@ namespace BasiQBLL.DTOs.ProductDTOs
         public int? Stock { get; set; }
 
         public List<int>? CategoryIds { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (SalePrice.HasValue && BasePrice.HasValue && SalePrice.Value > BasePrice.Value)
+            {
+                yield return new ValidationResult(
+                    "Sale price cannot be greater than base price.",
+                    new[] { nameof(SalePrice) }
+                );
+            }
+        }
     }
 }
