@@ -24,7 +24,6 @@ namespace BasiQDAL.Entities
             Description = description;
             AdminUserId = adminUserId;
             IsTrusted = isTrusted;
-            Status = MarketStatus.Active;
             Products = new List<Product>();
         }
 
@@ -75,22 +74,6 @@ namespace BasiQDAL.Entities
                 MaxProducts = maxProducts;
                 UpdateTimestamp();
             }
-        }
-
-        // ===== Product Management =====
-        public int GetProductCount()
-        {
-            return Products?.Count(p => !p.IsDeleted) ?? 0;
-        }
-
-        public bool CanAddMoreProducts()
-        {
-            return GetProductCount() < MaxProducts;
-        }
-
-        public int GetRemainingProductSlots()
-        {
-            return Math.Max(0, MaxProducts - GetProductCount());
         }
     }
 }
