@@ -1,4 +1,8 @@
-﻿using BasiQDAL.Enums;
+﻿using BasiQBLL.DTOs.CategoryDTOs;
+using BasiQBLL.DTOs.GlobalProductDTOs;
+using BasiQBLL.DTOs.ProductImageDTOs;
+using BasiQBLL.DTOs.RejectionDTOs;
+using BasiQDAL.Enums;
 
 namespace BasiQBLL.DTOs.ProductDTOs
 {
