@@ -39,6 +39,22 @@ namespace BasiQDAL.Repositories.Abstraction
         Task<Product?> LinkToGlobalProductAsync(int productId, int globalProductId);
         Task<Product?> UnlinkFromGlobalProductAsync(int productId);
 
+        // ===== Product Image Management =====
+        Task AddProductImageAsync(ProductImage image);
+        Task<ProductImage?> GetProductImageByIdAsync(int id);
+        Task UpdateProductImageAsync(ProductImage image);
+        Task RemoveProductImageAsync(int imageId);
+        Task SetPrimaryImageAsync(int imageId);
+        Task<(IEnumerable<ProductImage> Data, int TotalCount)> GetProductImagesAsync(int pageNumber, int pageSize, int productId);
+
+        // ===== Category Management =====
+        Task AddCategoryToProductAsync(int productId, int categoryId);
+        Task RemoveCategoryFromProductAsync(int productId, int categoryId);
+        Task UpdateProductCategoriesAsync(int productId, List<int> categoryIds);
+
+        // ===== Rejection Management =====
+        Task<ProductRejection?> GetLatestRejectionAsync(int productId);
+
         // ===== Statistics =====
         Task<int> GetTotalProductsCountAsync(bool includeDeleted = false);
         Task<int> GetProductsByMarketCountAsync(int marketId);
