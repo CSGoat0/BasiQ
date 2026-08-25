@@ -166,6 +166,75 @@ namespace BasiQDAL.Repositories.Implementation
             return await query.ToPagedResultAsync(pageNumber, pageSize);
         }
 
+        public async Task<(IEnumerable<Product> Data, int TotalCount)> FilterProductsAsync(
+            int pageNumber,
+            int pageSize,
+            string? searchTerm,
+            int? marketId,
+            ProductStatus? status,
+            int? globalProductId,
+            double? minPrice,
+            double? maxPrice,
+            bool? inStock,
+            bool? onSale,
+            List<int>? categoryIds,
+            DateTime? createdFrom,
+            DateTime? createdTo,
+            bool includeDeleted)
+        {
+            var query = _context.Products
+                .Include(p => p.ProductImages)
+                .Include(p => p.Categories)
+                .Include(p => p.Market)
+                .AsQueryable();
+
+            // Apply filters
+            if (!includeDeleted)
+                query = query.Where(p => !p.IsDeleted);
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var term = searchTerm.ToLower();
+                query = query.Where(p =>
+                    (p.Name != null && p.Name.ToLower().Contains(term)) ||
+                    (p.Description != null && p.Description.ToLower().Contains(term)));
+            }
+
+            if (marketId.HasValue)
+                query = query.Where(p => p.MarketId == marketId.Value);
+
+            if (status.HasValue)
+                query = query.Where(p => p.Status == status.Value);
+
+            if (globalProductId.HasValue)
+                query = query.Where(p => p.GlobalProductId == globalProductId.Value);
+
+            if (minPrice.HasValue)
+                query = query.Where(p => p.BasePrice >= minPrice.Value);
+
+            if (maxPrice.HasValue)
+                query = query.Where(p => p.BasePrice <= maxPrice.Value);
+
+            if (inStock.HasValue && inStock.Value)
+                query = query.Where(p => p.Stock > 0);
+
+            if (onSale.HasValue && onSale.Value)
+                query = query.Where(p => p.SalePrice != null && p.SalePrice < p.BasePrice);
+
+            if (categoryIds != null && categoryIds.Any())
+            {
+                query = query.Where(p => p.Categories != null && p.Categories.Any(c => categoryIds.Contains(c.Id)));
+            }
+
+            if (createdFrom.HasValue)
+                query = query.Where(p => p.RegistrationDate >= createdFrom.Value);
+
+            if (createdTo.HasValue)
+                query = query.Where(p => p.RegistrationDate <= createdTo.Value);
+
+            return await query.ToPagedResultAsync(pageNumber, pageSize);
+        }
+
         // ===== Product Status Management =====
 
         public async Task<Product?> UpdateProductStatusAsync(int productId, ProductStatus status)
@@ -265,10 +334,7 @@ namespace BasiQDAL.Repositories.Implementation
         public async Task<Product?> LinkToGlobalProductAsync(int productId, int globalProductId)
         {
             var product = await GetProductByIdAsync(productId);
-            var globalProduct = await _context.GlobalProducts
-                .FirstOrDefaultAsync(gp => gp.Id == globalProductId && !gp.IsDeleted);
-
-            if (product != null && globalProduct != null)
+            if (product != null)
             {
                 product.EditGlobalProductId(globalProductId);
                 await _context.SaveChangesAsync();
@@ -285,6 +351,157 @@ namespace BasiQDAL.Repositories.Implementation
                 await _context.SaveChangesAsync();
             }
             return product;
+        }
+
+        // ===== Product Image Management =====
+
+        public async Task AddProductImageAsync(ProductImage image)
+        {
+            _context.ProductImages.Add(image);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<ProductImage?> GetProductImageByIdAsync(int id)
+        {
+            return await _context.ProductImages
+                .Include(pi => pi.Product)
+                .FirstOrDefaultAsync(pi => pi.Id == id && !pi.IsDeleted);
+        }
+
+        public async Task UpdateProductImageAsync(ProductImage image)
+        {
+            _context.Entry(image).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveProductImageAsync(int imageId)
+        {
+            var image = await GetProductImageByIdAsync(imageId);
+            if (image != null)
+            {
+                image.Delete();
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task SetPrimaryImageAsync(int imageId)
+        {
+            var image = await GetProductImageByIdAsync(imageId);
+            if (image == null)
+                return;
+
+            // Unset primary for all images of this product
+            var productImages = await _context.ProductImages
+                .Where(pi => pi.ProductId == image.ProductId && !pi.IsDeleted)
+                .ToListAsync();
+
+            foreach (var img in productImages)
+            {
+                img.UnsetPrimary();
+            }
+
+            // Set the selected image as primary
+            image.SetAsPrimary();
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<(IEnumerable<ProductImage> Data, int TotalCount)> GetProductImagesAsync(int pageNumber, int pageSize, int productId)
+        {
+            var query = _context.ProductImages
+                .Where(pi => pi.ProductId == productId && !pi.IsDeleted)
+                .OrderByDescending(pi => pi.IsPrimary)
+                .ThenBy(pi => pi.RegistrationDate)
+                .AsQueryable();
+
+            return await query.ToPagedResultAsync(pageNumber, pageSize);
+        }
+
+        public async Task<int> GetProductImageCountAsync(int productId)
+        {
+            return await _context.ProductImages
+                .Where(pi => pi.ProductId == productId && !pi.IsDeleted)
+                .CountAsync();
+        }
+
+        // ===== Category Management (Using ProductCategory) =====
+
+        public async Task AddCategoryToProductAsync(int productId, int categoryId)
+        {
+            // Check if relationship already exists
+            var exists = await _context.ProductCategories
+                .AnyAsync(pc => pc.ProductId == productId && pc.CategoryId == categoryId);
+
+            if (!exists)
+            {
+                var productCategory = new ProductCategory(productId, categoryId);
+                _context.ProductCategories.Add(productCategory);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task RemoveCategoryFromProductAsync(int productId, int categoryId)
+        {
+            var productCategory = await _context.ProductCategories
+                .FirstOrDefaultAsync(pc => pc.ProductId == productId && pc.CategoryId == categoryId);
+
+            if (productCategory != null)
+            {
+                _context.ProductCategories.Remove(productCategory);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task UpdateProductCategoriesAsync(int productId, List<int> categoryIds)
+        {
+            // Remove all current categories
+            var currentCategories = await _context.ProductCategories
+                .Where(pc => pc.ProductId == productId)
+                .ToListAsync();
+
+            _context.ProductCategories.RemoveRange(currentCategories);
+
+            // Add new categories
+            if (categoryIds != null && categoryIds.Any())
+            {
+                // Verify all categories exist
+                var validCategoryIds = await _context.Categories
+                    .Where(c => categoryIds.Contains(c.Id) && !c.IsDeleted)
+                    .Select(c => c.Id)
+                    .ToListAsync();
+
+                foreach (var categoryId in validCategoryIds)
+                {
+                    _context.ProductCategories.Add(new ProductCategory(productId, categoryId));
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Category>> GetCategoriesForProductAsync(int productId)
+        {
+            return await _context.ProductCategories
+                .Where(pc => pc.ProductId == productId)
+                .Select(pc => pc.Category)
+                .Where(c => c != null && !c.IsDeleted)
+                .ToListAsync() ?? new List<Category>();
+        }
+
+        // ===== Rejection Management =====
+
+        public async Task AddRejectionToProductAsync(ProductRejection rejection)
+        {
+            _context.ProductRejections.Add(rejection);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<ProductRejection?> GetLatestRejectionAsync(int productId)
+        {
+            return await _context.ProductRejections
+                .Include(pr => pr.RejectedByUser)
+                .Where(pr => pr.ProductId == productId && !pr.IsDeleted)
+                .OrderByDescending(pr => pr.RegistrationDate)
+                .FirstOrDefaultAsync();
         }
 
         // ===== Statistics =====
@@ -377,13 +594,6 @@ namespace BasiQDAL.Repositories.Implementation
         {
             var product = await GetProductByIdAsync(productId);
             return product?.MarketId == marketId;
-        }
-
-        public async Task<int> GetProductImageCountAsync(int productId)
-        {
-            return await _context.ProductImages
-                .Where(pi => pi.ProductId == productId && !pi.IsDeleted)
-                .CountAsync();
         }
     }
 }
