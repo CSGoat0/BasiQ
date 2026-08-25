@@ -23,6 +23,23 @@ namespace BasiQDAL.Repositories.Abstraction
         Task<(IEnumerable<Product> Data, int TotalCount)> GetProductsOnSaleAsync(int pageNumber, int pageSize);
         Task<(IEnumerable<Product> Data, int TotalCount)> GetDeletedProductsAsync(int pageNumber, int pageSize);
 
+        // Advanced filtering - takes primitive types, not DTOs
+        Task<(IEnumerable<Product> Data, int TotalCount)> FilterProductsAsync(
+            int pageNumber,
+            int pageSize,
+            string? searchTerm,
+            int? marketId,
+            ProductStatus? status,
+            int? globalProductId,
+            double? minPrice,
+            double? maxPrice,
+            bool? inStock,
+            bool? onSale,
+            List<int>? categoryIds,
+            DateTime? createdFrom,
+            DateTime? createdTo,
+            bool includeDeleted);
+
         // ===== Product Status Management =====
         Task<Product?> UpdateProductStatusAsync(int productId, ProductStatus status);
         Task<Product?> ApproveProductAsync(int productId);
@@ -46,13 +63,16 @@ namespace BasiQDAL.Repositories.Abstraction
         Task RemoveProductImageAsync(int imageId);
         Task SetPrimaryImageAsync(int imageId);
         Task<(IEnumerable<ProductImage> Data, int TotalCount)> GetProductImagesAsync(int pageNumber, int pageSize, int productId);
+        Task<int> GetProductImageCountAsync(int productId);
 
-        // ===== Category Management =====
+        // ===== Category Management (Using ProductCategory) =====
         Task AddCategoryToProductAsync(int productId, int categoryId);
         Task RemoveCategoryFromProductAsync(int productId, int categoryId);
         Task UpdateProductCategoriesAsync(int productId, List<int> categoryIds);
+        Task<IEnumerable<Category>> GetCategoriesForProductAsync(int productId);
 
         // ===== Rejection Management =====
+        Task AddRejectionToProductAsync(ProductRejection rejection);
         Task<ProductRejection?> GetLatestRejectionAsync(int productId);
 
         // ===== Statistics =====
@@ -69,6 +89,5 @@ namespace BasiQDAL.Repositories.Abstraction
         Task<bool> ProductExistsAsync(int id);
         Task<bool> IsProductAvailableAsync(int id);
         Task<bool> IsProductOwnedByMarketAsync(int productId, int marketId);
-        Task<int> GetProductImageCountAsync(int productId);
     }
 }
