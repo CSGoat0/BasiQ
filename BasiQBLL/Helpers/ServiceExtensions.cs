@@ -59,11 +59,19 @@ namespace BasiQBLL.Helpers
         public static void AddBasiQDependencyInjection(this IServiceCollection services)
         {
             // Repositories
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IGlobalProductRepository, GlobalProductRepository>();
+            services.AddScoped<IMarketRepository, MarketRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
 
             // Services
-            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IGlobalProductService, GlobalProductService>();
+            services.AddScoped<IMarketService, MarketService>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IUserService, UserService>();
         }
 
         public static void AddThirdPartyAuthentication(this IServiceCollection services, IConfiguration Configuration)
