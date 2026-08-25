@@ -13,19 +13,16 @@ namespace BasiQBLL.Services.Implementation
     {
         private readonly IGlobalProductRepository _globalProductRepository;
         private readonly IProductRepository _productRepository;
-        private readonly IMarketRepository _marketRepository;
         private readonly GlobalProductMapper _mapper;
         private readonly ILogger<GlobalProductService> _logger;
 
         public GlobalProductService(
             IGlobalProductRepository globalProductRepository,
             IProductRepository productRepository,
-            IMarketRepository marketRepository,
             ILogger<GlobalProductService> logger)
         {
             _globalProductRepository = globalProductRepository;
             _productRepository = productRepository;
-            _marketRepository = marketRepository;
             _logger = logger;
             _mapper = new GlobalProductMapper();
         }
