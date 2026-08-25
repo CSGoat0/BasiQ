@@ -14,7 +14,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace BasiQBLL.Helpers
+namespace BasiQBLL.Extensions
 {
     public static class ServiceExtensions
     {
