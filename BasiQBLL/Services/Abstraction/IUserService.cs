@@ -8,14 +8,14 @@ namespace BasiQBLL.Services.Abstraction
     public interface IUserService
     {
         // ===== Queries =====
-        Task<ServiceResponse<PagedResultDTO<UserResponseDTO>>> GetAllUsersAsync(PaginationParametersDTO parametersDto, bool includeDeleted = false);
+        Task<ServiceResponse<PagedResultDTO<UserResponseDTO>>> GetAllUsersAsync(PaginationParametersDTO parametersDTO, bool includeDeleted = false);
         Task<ServiceResponse<UserResponseDTO>> GetUserByIdAsync(string userId);
-        Task<ServiceResponse<PagedResultDTO<UserResponseDTO>>> GetUsersInRoleAsync(PaginationParametersDTO parametersDto, string role);
+        Task<ServiceResponse<PagedResultDTO<UserResponseDTO>>> GetUsersInRoleAsync(PaginationParametersDTO parametersDTO, string role);
         Task<ServiceResponse<UserResponseDTO>> GetUserByEmailAsync(string email);
         Task<ServiceResponse<bool>> UserExistsAsync(string userId);
         Task<ServiceResponse<bool>> IsUserDeletedAsync(string userId);
         Task<ServiceResponse<LoginResultDTO>> LoginAsync(string usernameOrEmail, string password);
-        Task<bool> IsExternalLoginLinkedAsync(string providerKey, string loginProvider, UserResponseDTO userDto);
+        Task<bool> IsExternalLoginLinkedAsync(string providerKey, string loginProvider, UserResponseDTO userDTO);
         Task<string> GenerateJwtTokenAsync(UserResponseDTO UserDTO);
 
         // ===== CRUD =====
