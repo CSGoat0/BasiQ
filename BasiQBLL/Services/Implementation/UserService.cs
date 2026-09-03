@@ -3,7 +3,6 @@ using BasiQBLL.DTOs.PaginationDTOs;
 using BasiQBLL.DTOs.UserDTOs;
 using BasiQBLL.Mapper;
 using BasiQBLL.Services.Abstraction;
-using BasiQDAL.Entities;
 using BasiQDAL.Repositories.Abstraction;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -100,6 +99,8 @@ namespace BasiQBLL.Services.Implementation
                 }
 
                 var response = _userMapper.MapToUserResponseDto(user);
+                var roles = await _userRepository.GetUserRolesAsync(userId);
+                response.Roles = roles.ToList();
 
                 return new ServiceResponse<UserResponseDTO>
                 {
@@ -182,6 +183,8 @@ namespace BasiQBLL.Services.Implementation
                 }
 
                 var response = _userMapper.MapToUserResponseDto(user);
+                var roles = await _userRepository.GetUserRolesAsync(user.Id);
+                response.Roles = roles.ToList();
 
                 return new ServiceResponse<UserResponseDTO>
                 {
@@ -201,7 +204,7 @@ namespace BasiQBLL.Services.Implementation
             }
         }
 
-        public async Task<ServiceResponse<string?>> LoginAsync(string usernameOrEmail, string password)
+        public async Task<ServiceResponse<LoginResultDTO>> LoginAsync(string usernameOrEmail, string password)
         {
             try
             {
@@ -209,7 +212,7 @@ namespace BasiQBLL.Services.Implementation
 
                 if (user == null || user.IsDeleted)
                 {
-                    return new ServiceResponse<string?>
+                    return new ServiceResponse<LoginResultDTO>
                     {
                         Success = false,
                         Message = "Invalid credentials."
@@ -218,7 +221,7 @@ namespace BasiQBLL.Services.Implementation
 
                 if (!user.EmailConfirmed)
                 {
-                    return new ServiceResponse<string?>
+                    return new ServiceResponse<LoginResultDTO>
                     {
                         Success = false,
                         Message = "Please confirm your email before logging in."
@@ -229,7 +232,7 @@ namespace BasiQBLL.Services.Implementation
                 if (!passwordValid)
                 {
                     await _userRepository.AccessFailedAsync(user);
-                    return new ServiceResponse<string?>
+                    return new ServiceResponse<LoginResultDTO>
                     {
                         Success = false,
                         Message = "Invalid credentials."
@@ -238,20 +241,30 @@ namespace BasiQBLL.Services.Implementation
 
                 await _userRepository.ResetAccessFailedCountAsync(user);
 
+                // Get user DTO with roles
                 var userDTO = _userMapper.MapToUserResponseDto(user);
+                var roles = await _userRepository.GetUserRolesAsync(user.Id);
+                userDTO.Roles = roles.ToList();
+
                 var token = await GenerateJwtTokenAsync(userDTO);
 
-                return new ServiceResponse<string?>
+                var result = new LoginResultDTO
+                {
+                    Token = token,
+                    User = userDTO
+                };
+
+                return new ServiceResponse<LoginResultDTO>
                 {
                     Success = true,
-                    Data = token,
+                    Data = result,
                     Message = "Login successful."
                 };
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error during login for: {UsernameOrEmail}", usernameOrEmail);
-                return new ServiceResponse<string?>
+                return new ServiceResponse<LoginResultDTO>
                 {
                     Success = false,
                     Message = $"An error occurred during login: {ex.Message}"
@@ -261,21 +274,15 @@ namespace BasiQBLL.Services.Implementation
 
         public async Task<string> GenerateJwtTokenAsync(UserResponseDTO userDTO)
         {
-            var user = _userMapper.MapToUser(userDTO);
-            return await GenerateJwtTokenInternalAsync(user);
-        }
-
-        private async Task<string> GenerateJwtTokenInternalAsync(User user)
-        {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Email, user.Email!),
-                new Claim(ClaimTypes.Name, user.UserName!),
+                new Claim(ClaimTypes.NameIdentifier, userDTO.Id),
+                new Claim(ClaimTypes.Email, userDTO.Email!),
+                new Claim(ClaimTypes.Name, userDTO.UserName!),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            var roles = await _userRepository.GetUserRolesAsync(user.Id);
+            var roles = await _userRepository.GetUserRolesAsync(userDTO.Id);
 
             foreach (var role in roles)
                 claims.Add(new Claim(ClaimTypes.Role, role));

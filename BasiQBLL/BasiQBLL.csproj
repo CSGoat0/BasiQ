@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <Folder Include="DTOs\PaginationDTOs\" />
-    <Folder Include="DTOs\UserDTOs\" />
     <Folder Include="Extensions\" />
     <Folder Include="Helpers\" />
     <Folder Include="Mapper\" />
