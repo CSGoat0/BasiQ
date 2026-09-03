@@ -67,8 +67,7 @@ namespace BasiQPLL.Controllers
         /// Get all users with pagination
         /// </summary>
         [HttpGet]
-        //[Authorize(Roles = "Admin")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll([FromQuery] PaginationParametersDTO parametersDTO, [FromQuery] bool includeDeleted = false)
         {
             var result = await _userService.GetAllUsersAsync(parametersDTO, includeDeleted);
@@ -137,7 +136,7 @@ namespace BasiQPLL.Controllers
         /// </summary>
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginResponseDTO responseDto)
+        public async Task<IActionResult> Login([FromBody] LoginResponseDTO responseDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new ServiceResponse<ModelStateDictionary>
@@ -147,7 +146,7 @@ namespace BasiQPLL.Controllers
                     Message = "Invalid credentials."
                 });
 
-            var result = await _userService.LoginAsync(responseDto.UserName, responseDto.Password);
+            var result = await _userService.LoginAsync(responseDTO.UserName, responseDTO.Password);
 
             if (result.Success)
             {
