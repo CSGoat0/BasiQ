@@ -150,20 +150,19 @@ namespace BasiQPLL.Controllers
 
             if (result.Success)
             {
-                var user = await _userService.GetUserByEmailAsync(responseDTO.UserName);
-                return HandleResponse(new ServiceResponse<object?>
+                return Ok(new ServiceResponse<LoginResultDTO>
                 {
                     Success = true,
-                    Data = new
-                    {
-                        Token = result.Data,
-                        User = user.Data
-                    },
+                    Data = result.Data,
                     Message = "Login successful."
                 });
             }
 
-            return HandleResponse(result);
+            return BadRequest(new ServiceResponse<object?>
+            {
+                Success = false,
+                Message = result.Message
+            });
         }
 
         // ==============================
