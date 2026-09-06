@@ -14,7 +14,7 @@ namespace BasiQBLL.Services.Abstraction
         Task<ServiceResponse<UserResponseDTO>> GetUserByEmailAsync(string email);
         Task<ServiceResponse<bool>> UserExistsAsync(string userId);
         Task<ServiceResponse<bool>> IsUserDeletedAsync(string userId);
-        Task<ServiceResponse<string?>> LoginAsync(string usernameOrEmail, string password);
+        Task<ServiceResponse<LoginResultDTO>> LoginAsync(string usernameOrEmail, string password);
         Task<bool> IsExternalLoginLinkedAsync(string providerKey, string loginProvider, UserResponseDTO userDTO);
         Task<string> GenerateJwtTokenAsync(UserResponseDTO UserDTO);
 
